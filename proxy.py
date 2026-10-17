@@ -63,9 +63,11 @@ def main():
     storage = lambda slot: slot_address(rpc(a.rpc, "eth_getStorageAt", [addr, slot, "latest"]))
     impl, admin, beacon, zos = storage(IMPL_SLOT), storage(ADMIN_SLOT), storage(BEACON_SLOT), storage(ZOS_SLOT)
     print(f"{addr}: contract, {size} bytes of code")
+    slot0 = None
     if beacon:
         impl = slot_address(rpc(a.rpc, "eth_call", [{"to": beacon, "data": IMPLEMENTATION}, "latest"]))
-        print(f"  EIP-1967 beacon proxy\n  beacon          {beacon}\n  implementation  {impl}")
+        implementation = impl or "none (beacon returned zero address)"
+        print(f"  EIP-1967 beacon proxy\n  beacon          {beacon}\n  implementation  {implementation}")
     elif impl:
         style = "transparent (admin set)" if admin else "UUPS or admin elsewhere (admin slot empty)"
         print(f"  EIP-1967 proxy, {style}\n  implementation  {impl}")
